@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "role_trust" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = ["${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
 
     condition {
@@ -53,8 +53,8 @@ data "aws_iam_policy_document" "manage_mfa" {
     ]
 
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:mfa/&{aws:username}",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}",
+      "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:mfa/&{aws:username}",
+      "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}",
     ]
   }
 
@@ -66,8 +66,8 @@ data "aws_iam_policy_document" "manage_mfa" {
     ]
 
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:mfa/&{aws:username}",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}",
+      "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:mfa/&{aws:username}",
+      "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}",
     ]
 
     condition {
@@ -85,8 +85,8 @@ data "aws_iam_policy_document" "manage_mfa" {
     ]
 
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:mfa/&{aws:username}",
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}",
+      "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:mfa/&{aws:username}",
+      "${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}",
     ]
 
     condition {
@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "allow_change_password" {
   statement {
     actions = ["iam:ChangePassword"]
 
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}"]
+    resources = ["${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}"]
   }
 
   statement {
@@ -128,7 +128,7 @@ data "aws_iam_policy_document" "allow_change_password" {
   statement {
     actions = ["iam:GetLoginProfile"]
 
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}"]
+    resources = ["${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}"]
 
     condition {
       test     = "Bool"
@@ -149,7 +149,7 @@ data "aws_iam_policy_document" "allow_key_management" {
       "iam:ListAccessKeys",
     ]
 
-    resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}"]
+    resources = ["${var.arn_format}:iam::${data.aws_caller_identity.current.account_id}:user/&{aws:username}"]
 
     condition {
       test     = "Bool"
@@ -243,7 +243,7 @@ resource "aws_iam_group_policy_attachment" "key_management_admin" {
 resource "aws_iam_role_policy_attachment" "admin" {
   count      = local.enabled ? 1 : 0
   role       = join("", aws_iam_role.admin.*.name)
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  policy_arn = "${var.arn_format}:iam::aws:policy/AdministratorAccess"
 }
 
 resource "aws_iam_group_membership" "admin" {
@@ -329,7 +329,7 @@ resource "aws_iam_group_policy_attachment" "key_management_readonly" {
 resource "aws_iam_role_policy_attachment" "readonly" {
   count      = local.enabled ? 1 : 0
   role       = join("", aws_iam_role.readonly.*.name)
-  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+  policy_arn = "${var.arn_format}:iam::aws:policy/ReadOnlyAccess"
 }
 
 resource "aws_iam_group_membership" "readonly" {
